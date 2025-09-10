@@ -3,8 +3,8 @@ POST http://localhost:1992/api/auth/local/register
 Content-Type: application/json
 
 {
-  "pseudo": "thomaslaforge@gmail.com",
-  "motdpasse": "admin1234"
+  "email": "thomaslaforge@gmail.com",
+  "password": "admin1234"
 }
 
 ###
@@ -12,8 +12,8 @@ POST http://localhost:1992/api/auth/local
 Content-Type: application/json
 
 {
-  "pseudo": "thomaslaforge@gmail.com",
-  "motdpasse": "admin1234"
+  "email": "thomaslaforge@gmail.com",
+  "password": "admin1234"
 }
 
 ###

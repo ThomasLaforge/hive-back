@@ -12,40 +12,41 @@ authRouter.post("/local/register", async (req, res) => {
     // const motdpasse = req.body.motdpasse;
     // const pseudo = req.body.pseudo;
 
-    const { motdpasse, pseudo } = req.body;
-    const userWithpseudo = await prisma.user.findFirst({ where: { pseudo } });
-    if (userWithpseudo) {
-        res.status(400).json("pseudo already exists");
+    const { email, password, pseudo } = req.body;
+    const userWithEmail = await prisma.user.findFirst({ where: { email } });
+    if (userWithEmail) {
+        res.status(400).json("Email already exists");
     }
     else {
-        const hashedmotdpasse = await bcrypt.hash(motdpasse, parseInt(process.env.SALT_ROUNDS!));
+        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS!));
         const newUser = await prisma.user.create({ 
             data: {
-                motdpasse: hashedmotdpasse, 
-                pseudo
+                password: hashedPassword,
+                pseudo,
+                email
             } 
-            });
+        });
         res.json(newUser);
     }
 });
 
 authRouter.post("/local", async (req, res) => {
-    const { pseudo, motdpasse } = req.body;
-    const userWithpseudo = await prisma.user.findFirst({ where: { pseudo } });
-    if (!userWithpseudo) {
-        res.status(400).json("pseudo or motdpasse is incorrect");
+    const { email, password } = req.body;
+    const userWithEmail = await prisma.user.findFirst({ where: { email } });
+    if (!userWithEmail) {
+        res.status(400).json("Email or password is incorrect");
     }
     else {
-        const ismotdpasseCorrect = await bcrypt.compare(motdpasse, userWithpseudo.motdpasse);
-        if (ismotdpasseCorrect) {
-            const token = jwt.sign(userWithpseudo, process.env.JWT_SECRET!);
+        const isPasswordCorrect = await bcrypt.compare(password, userWithEmail.password);
+        if (isPasswordCorrect) {
+            const token = jwt.sign(userWithEmail, process.env.JWT_SECRET!);
             res.json({
                 token,
-                ...userWithpseudo
+                ...userWithEmail
             });
         }
         else {
-            res.status(400).json("pseudo or motdpasse is incorrect");
+            res.status(400).json("Email or password is incorrect");
         }
     }
 })
