@@ -3,8 +3,9 @@ POST http://localhost:1992/api/auth/local/register
 Content-Type: application/json
 
 {
-  "email": "thomaslaforge@gmail.com",
-  "password": "admin1234"
+    "email": "thomaslaforge@gmail.com",
+    "password": "admin1234",
+    "pseudo": "mcpaulo"
 }
 
 ###
