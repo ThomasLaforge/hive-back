@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  pseudo   String
+  email    String @unique
+  password String
+  avatarUrl String?
+  currentGift String @default("")
+
+  householdId Int?
+  household       Household? @relation("HouseholdMembers", fields: [householdId], references: [id])
+  completedTasks  CompletedTask[]
+  households      Household[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Household {
+  id        Int    @id @default(autoincrement())
+  name      String
+  avatarUrl String?
+
+  ownerId Int
+  owner     User @relation(fields: [ownerId], references: [id])
+  members   User[] @relation("HouseholdMembers")
+  tasks     Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id            Int      @id @default(autoincrement())
+  title         String
+  repetition    String?
+  dueDate       DateTime?
+  deactivated   Boolean  @default(false)
+  xp            Int      @default(0)
+
+  householdId     Int
+  household       Household @relation(fields: [householdId], references: [id])
+  completedTasks  CompletedTask[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CompletedTask {
+  id          Int      @id @default(autoincrement())
+  completedAt DateTime @default(now())
+  xpEarned   Int
+
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

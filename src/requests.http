@@ -1,0 +1,95 @@
+###
+POST http://localhost:1992/api/auth/local/register
+Content-Type: application/json
+
+{
+  "pseudo": "thomaslaforge@gmail.com",
+  "motdpasse": "admin1234"
+}
+
+###
+POST http://localhost:1992/api/auth/local
+Content-Type: application/json
+
+{
+  "pseudo": "thomaslaforge@gmail.com",
+  "motdpasse": "admin1234"
+}
+
+###
+GET http://localhost:1992/api/instruments
+
+###
+POST http://localhost:1992/api/instruments
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGhvbWFzbGFmb3JnZUBnbWFpbC5jb20iLCJtb3RkcGFzc2UiOiIkMmIkMTAkdGRvRGdGa0J4YURsRy5adThyeXpXZTd4NnI1czRHV0VXSi5OdWNRLlpleVlIOHM4SXc4UnkiLCJpYXQiOjE3Mzg4NDk1NzF9.7mz_DRquEgbIrulfKZ5G1fUB60DfjdcoZ8XBCk83lBI
+
+{
+    "data": {
+        "name": "Violin",
+        "weight": 2,
+        "price": 59,
+        "color": "black"
+    }
+}
+
+###
+POST http://localhost:1992/api/instruments
+Content-Type: application/json
+
+{
+    "data": {
+        "name": "Violin",
+        "weight": 2,
+        "price": 59,
+        "color": "black"
+    }
+}
+
+###
+GET http://localhost:1992/api/instruments/1
+
+###
+PUT http://localhost:1992/api/instruments/1
+Content-Type: application/json
+
+{
+    "data": {
+        "name": "Violin",
+        "color": "rouge",
+        "weight": 3,
+        "price": 500
+    }
+}
+
+###
+DELETE http://localhost:1992/api/instruments/1
+
+###
+GET http://localhost:1992/bananes?couleur=jaune
+
+###
+GET http://localhost:1992/bananes
+
+###
+GET http://localhost:1992/bananes?couleur=verte
+
+###
+GET http://localhost:1992/bananes?couleur=jaune
+
+###
+POST http://localhost:1992/api/reparations
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGhvbWFzbGFmb3JnZUBnbWFpbC5jb20iLCJtb3RkcGFzc2UiOiIkMmIkMTAkdGRvRGdGa0J4YURsRy5adThyeXpXZTd4NnI1czRHV0VXSi5OdWNRLlpleVlIOHM4SXc4UnkiLCJpYXQiOjE3Mzg4NTEwMjN9.anKR77tkfsBq2W6futMDdJg7We4g-EEQ0j0IFceEM4w
+Content-Type: application/json
+
+{
+    "data": {
+        "name": "Reparation 1",
+        "price": 100,
+        "instrumentId": 1
+    }
+}
+
+###
+DELETE http://localhost:1992/api/reparations/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGhvbWFzbGFmb3JnZUBnbWFpbC5jb20iLCJtb3RkcGFzc2UiOiIkMmIkMTAkdGRvRGdGa0J4YURsRy5adThyeXpXZTd4NnI1czRHV0VXSi5OdWNRLlpleVlIOHM4SXc4UnkiLCJpYXQiOjE3Mzg4NTEwMjN9.anKR77tkfsBq2W6futMDdJg7We4g-EEQ0j0IFceEM4w
