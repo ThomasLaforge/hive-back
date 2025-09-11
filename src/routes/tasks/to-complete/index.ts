@@ -1,59 +1,51 @@
-import { Handler } from "express";
-import { checkToken } from "../../../middlewares/checkToken";
-import prisma from "../../../prisma";
+import { Handler } from 'express';
+import prisma from '../../../prisma';
 
-export const get: Handler[] = [checkToken, async (req, res) => {
-  const userId = req.user?.id;
-  
-  const household = await prisma.household.findFirst({
-    where: { members: { some: { id: userId } } }
-  });
-  if(!household) {
-    return res.status(401).json({ message: 'This user cannot get tasks cause not in a household' });
-  }
-  const tasks = await prisma.task.findMany({
-    where: { 
-      householdId: household.id,
-      deactivated: false,
-     }
-  });
-
-  const completedTasks = await prisma.completedTask.findMany({
-    where: {
-      userId: userId,
-      task: {
-        householdId: household.id,
+export const get: Handler = async (req, res) => {
+  try {
+    const allTasks = await prisma.task.findMany({
+      include: {
+        completedTasks: {
+          orderBy: {
+            completedAt: 'desc',
+          },
+          take: 1,
+        },
       },
-    }
-  });
+    });
 
-  const oneShotTasks = tasks.filter(task => task.dueDate && !completedTasks.some(ct => ct.taskId === task.id));
+    const tasksToComplete = allTasks.filter(task => {
+      if (task.deactivated) {
+        return false; // Skip deactivated tasks
+      }
 
-  const toCompleteTasks = tasks.filter(task => {
-    if(task.dueDate) {
-      return false;
-    }
+      let effectiveDueDate: Date | null = null;
 
-    const lastCompleted = completedTasks
-      .filter(ct => ct.taskId === task.id)
-      .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime())[0];
-    const lastCompletedDate = lastCompleted ? lastCompleted.completedAt : task.createdAt;
-    const daysSinceLastCompletion = Math.floor((new Date().getTime() - lastCompletedDate.getTime()) / (1000 * 60 * 60 * 24));
-    return daysSinceLastCompletion >= task.repetition;
-  });
+      if (task.repetition && task.repetition > 0) {
+        const lastCompletedTask = task.completedTasks[0];
+        if (lastCompletedTask) {
+          // Calculate next due date based on last completion + repetition days
+          effectiveDueDate = new Date(lastCompletedTask.completedAt);
+          effectiveDueDate.setDate(effectiveDueDate.getDate() + task.repetition);
+        } else {
+          // If never completed, use original dueDate or createdAt as initial due date
+          effectiveDueDate = task.dueDate || task.createdAt;
+        }
+      } else {
+        // Non-repetition task, use its dueDate directly
+        effectiveDueDate = task.dueDate;
+      }
 
-  const allTasks = [...oneShotTasks, ...toCompleteTasks];
-  allTasks.sort((a, b) => {
-    if(a.dueDate && b.dueDate) {
-      return a.dueDate.getTime() - b.dueDate.getTime();
-    } else if(a.dueDate) {
-      return -1;
-    } else if(b.dueDate) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+      if (!effectiveDueDate) {
+        return false; // No due date to check against
+      }
 
-  return res.json(allTasks);
-}];
+      // Check if the task is due or overdue
+      return effectiveDueDate <= new Date();
+    });
+
+    res.json(tasksToComplete);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
