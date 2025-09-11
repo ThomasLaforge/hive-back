@@ -3,6 +3,13 @@ import prisma from '../../prisma';
 
 // Get household by ID
 export const get: Handler = async (req, res) => {
+  const userId = req.user?.id;
+  const household = await prisma.household.findFirst({
+    where: { members: { some: { id: userId } } }
+  });
+  if(!household) {
+    return res.status(401).json({ message: 'This user cannot get household cause not in a household' });
+  }
   const { id } = req.params;
   try {
     const household = await prisma.household.findUnique({
@@ -20,6 +27,16 @@ export const get: Handler = async (req, res) => {
 
 // Update a household
 export const put: Handler = async (req, res) => {
+  const household = await prisma.household.findUnique({
+    where: { id: Number(req.params.id) },
+  });
+  if(!household) {
+    return res.status(404).json({ message: 'Household not found' });
+  }
+  if(household.ownerId !== req.user?.id) {
+    return res.status(403).json({ message: 'This user cannot update this household cause not the owner' });
+  }
+    
   const { id } = req.params;
   const { name, avatarUrl, ownerId } = req.body;
   try {
@@ -34,14 +51,14 @@ export const put: Handler = async (req, res) => {
 };
 
 // Delete a household
-export const del: Handler = async (req, res) => {
-  const { id } = req.params;
-  try {
-    await prisma.household.delete({
-      where: { id: Number(id) },
-    });
-    res.status(204).send();
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-};
+// export const del: Handler = async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     await prisma.household.delete({
+//       where: { id: Number(id) },
+//     });
+//     res.status(204).send();
+//   } catch (error: any) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };

@@ -8,15 +8,16 @@ export const post: Handler = async (req, res) => {
     const { email, password } = req.body;
     const userWithEmail = await prisma.user.findFirst({ where: { email } });
     if (!userWithEmail) {
-        res.json("Email or password is incorrect");
+      res.json("Email or password is incorrect");
     }
     else {
+        const { password: _, ...userWithoutPassword } = userWithEmail;
         const isPasswordCorrect = await bcrypt.compare(password, userWithEmail.password);
         if (isPasswordCorrect) {
             const token = jwt.sign(userWithEmail, process.env.JWT_SECRET!);
             res.json({
                 token,
-                ...userWithEmail
+                user: userWithoutPassword
             });
         }
         else {

@@ -1,6 +1,8 @@
+import { User } from "@prisma/client/wasm";
 import "dotenv/config";
 import { NextFunction, Request, Response } from 'express';
 import jwt from "jsonwebtoken";
+import "../typings";
 
 export interface DecodeToken {
     id: number;
@@ -28,6 +30,7 @@ export async function checkToken(req: Request, res: Response, next: NextFunction
                 console.log('decoded', decoded);
                 if (decoded) {
                     req.token = token;
+                    req.user = decoded as Omit<User, "password">;
                     next();
                 }
                 else {

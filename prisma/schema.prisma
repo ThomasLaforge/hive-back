@@ -41,7 +41,7 @@ model Household {
 model Task {
   id            Int      @id @default(autoincrement())
   title         String
-  repetition    String?
+  repetition    Int
   dueDate       DateTime?
   deactivated   Boolean  @default(false)
   xp            Int      @default(0)
