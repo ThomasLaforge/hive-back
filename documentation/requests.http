@@ -1,96 +1,129 @@
-###
-POST http://localhost:1992/api/auth/local/register
+### User Routes
+
+POST http://localhost:3000/api/user
 Content-Type: application/json
 
 {
-    "email": "thomaslaforge@gmail.com",
-    "password": "admin1234",
-    "pseudo": "mcpaulo"
+  "pseudo": "testuser",
+  "email": "test@example.com",
+  "password": "password123",
+  "avatarUrl": "http://example.com/avatar.png",
+  "currentGift": "Gift A"
 }
 
 ###
-POST http://localhost:1992/api/auth/local
+GET http://localhost:3000/api/user
+
+###
+GET http://localhost:3000/api/user/1
+
+###
+PUT http://localhost:3000/api/user/1
 Content-Type: application/json
 
 {
-  "email": "thomaslaforge@gmail.com",
-  "password": "admin1234"
+  "pseudo": "updateduser",
+  "email": "updated@example.com",
+  "password": "newpassword",
+  "avatarUrl": "http://example.com/new_avatar.png",
+  "currentGift": "Gift B"
 }
 
 ###
-GET http://localhost:1992/api/instruments
+DELETE http://localhost:3000/api/user/1
 
-###
-POST http://localhost:1992/api/instruments
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGhvbWFzbGFmb3JnZUBnbWFpbC5jb20iLCJtb3RkcGFzc2UiOiIkMmIkMTAkdGRvRGdGa0J4YURsRy5adThyeXpXZTd4NnI1czRHV0VXSi5OdWNRLlpleVlIOHM4SXc4UnkiLCJpYXQiOjE3Mzg4NDk1NzF9.7mz_DRquEgbIrulfKZ5G1fUB60DfjdcoZ8XBCk83lBI
+### Household Routes
 
-{
-    "data": {
-        "name": "Violin",
-        "weight": 2,
-        "price": 59,
-        "color": "black"
-    }
-}
-
-###
-POST http://localhost:1992/api/instruments
+POST http://localhost:3000/api/household
 Content-Type: application/json
 
 {
-    "data": {
-        "name": "Violin",
-        "weight": 2,
-        "price": 59,
-        "color": "black"
-    }
+  "name": "My Family",
+  "avatarUrl": "http://example.com/household.png",
+  "ownerId": 1
 }
 
 ###
-GET http://localhost:1992/api/instruments/1
+GET http://localhost:3000/api/household
 
 ###
-PUT http://localhost:1992/api/instruments/1
+GET http://localhost:3000/api/household/1
+
+###
+PUT http://localhost:3000/api/household/1
 Content-Type: application/json
 
 {
-    "data": {
-        "name": "Violin",
-        "color": "rouge",
-        "weight": 3,
-        "price": 500
-    }
+  "name": "Updated Family",
+  "avatarUrl": "http://example.com/updated_household.png",
+  "ownerId": 1
 }
 
 ###
-DELETE http://localhost:1992/api/instruments/1
+DELETE http://localhost:3000/api/household/1
 
-###
-GET http://localhost:1992/bananes?couleur=jaune
+### Task Routes
 
-###
-GET http://localhost:1992/bananes
-
-###
-GET http://localhost:1992/bananes?couleur=verte
-
-###
-GET http://localhost:1992/bananes?couleur=jaune
-
-###
-POST http://localhost:1992/api/reparations
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGhvbWFzbGFmb3JnZUBnbWFpbC5jb20iLCJtb3RkcGFzc2UiOiIkMmIkMTAkdGRvRGdGa0J4YURsRy5adThyeXpXZTd4NnI1czRHV0VXSi5OdWNRLlpleVlIOHM4SXc4UnkiLCJpYXQiOjE3Mzg4NTEwMjN9.anKR77tkfsBq2W6futMDdJg7We4g-EEQ0j0IFceEM4w
+POST http://localhost:3000/api/task
 Content-Type: application/json
 
 {
-    "data": {
-        "name": "Reparation 1",
-        "price": 100,
-        "instrumentId": 1
-    }
+  "title": "Clean the kitchen",
+  "repetition": "daily",
+  "dueDate": "2025-09-15T10:00:00Z",
+  "deactivated": false,
+  "xp": 50,
+  "householdId": 1
 }
 
 ###
-DELETE http://localhost:1992/api/reparations/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGhvbWFzbGFmb3JnZUBnbWFpbC5jb20iLCJtb3RkcGFzc2UiOiIkMmIkMTAkdGRvRGdGa0J4YURsRy5adThyeXpXZTd4NnI1czRHV0VXSi5OdWNRLlpleVlIOHM4SXc4UnkiLCJpYXQiOjE3Mzg4NTEwMjN9.anKR77tkfsBq2W6futMDdJg7We4g-EEQ0j0IFceEM4w
+GET http://localhost:3000/api/task
+
+###
+GET http://localhost:3000/api/task/1
+
+###
+PUT http://localhost:3000/api/task/1
+Content-Type: application/json
+
+{
+  "title": "Clean the bathroom",
+  "repetition": "weekly",
+  "dueDate": "2025-09-20T12:00:00Z",
+  "deactivated": false,
+  "xp": 75,
+  "householdId": 1
+}
+
+###
+DELETE http://localhost:3000/api/task/1
+
+### CompletedTask Routes
+
+POST http://localhost:3000/api/completedtask
+Content-Type: application/json
+
+{
+  "xpEarned": 50,
+  "taskId": 1,
+  "userId": 1
+}
+
+###
+GET http://localhost:3000/api/completedtask
+
+###
+GET http://localhost:3000/api/completedtask/1
+
+###
+PUT http://localhost:3000/api/completedtask/1
+Content-Type: application/json
+
+{
+  "xpEarned": 60,
+  "taskId": 1,
+  "userId": 1
+}
+
+###
+DELETE http://localhost:3000/api/completedtask/1
