@@ -15,6 +15,11 @@ export const get: Handler[] = [checkToken, async (req, res) => {
   try {
     const household = await prisma.household.findUnique({
       where: { id: Number(id) },
+      include: {
+        members: true,
+        tasks: true,
+        owner: true
+      }
     });
     if (household) {
       res.json(household);

@@ -170,8 +170,7 @@ Content-Type: application/json
 
 {
   "xpEarned": 50,
-  "taskId": 1,
-  "userId": 1
+  "taskId": 1
 }
 
 ###
