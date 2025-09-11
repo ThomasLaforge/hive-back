@@ -1,6 +1,6 @@
 import { Handler } from 'express';
-import { checkToken } from '../../middlewares/checkToken';
-import prisma from '../../prisma';
+import { checkToken } from '../../../middlewares/checkToken';
+import prisma from '../../../prisma';
 
 // Get task by ID
 export const get: Handler[] = [checkToken, async (req, res) => {

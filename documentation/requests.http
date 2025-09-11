@@ -165,34 +165,11 @@ Content-Type: application/json
 ### CompletedTask Routes
 
 # @name createCompletedTask
-POST http://localhost:3000/api/completedtask
+POST http://localhost:3000/api/tasks/1/complete
 Content-Type: application/json
-
-{
-  "xpEarned": 50,
-  "taskId": 1
-}
+Authorization: Bearer {{token}}
 
 ###
 # @name getAll Tasks To complete
 GET http://localhost:3000/api/tasks/to-complete
 Authorization: Bearer {{token}}
-
-###
-# @name getCompletedTaskById
-GET http://localhost:3000/api/completedtask/1
-
-###
-# @name updateCompletedTask
-PUT http://localhost:3000/api/completedtask/1
-Content-Type: application/json
-
-{
-  "xpEarned": 60,
-  "taskId": 1,
-  "userId": 1
-}
-
-###
-# @name deleteCompletedTask
-DELETE http://localhost:3000/api/completedtask/1
