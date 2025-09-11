@@ -1,7 +1,8 @@
 import { Handler } from "express";
+import { checkToken } from "../../../middlewares/checkToken";
 import prisma from "../../../prisma";
 
-export const get: Handler = async (req, res) => {
+export const get: Handler[] = [checkToken, async (req, res) => {
   const userId = req.user?.id;
   
   const household = await prisma.household.findFirst({
@@ -55,4 +56,4 @@ export const get: Handler = async (req, res) => {
   });
 
   return res.json(allTasks);
-}
+}];

@@ -1,11 +1,14 @@
 import { Handler } from "express";
-import { checkToken } from "../../../middlewares/checkToken";
-import prisma from "../../../prisma";
+import { checkToken } from "../../../../middlewares/checkToken";
+import prisma from "../../../../prisma";
 
 // Join a household
 export const post: Handler[] = [checkToken, async (req, res) => {
   const userId = req.user?.id as number;
-  const { id } = req.body;
+  const id = req.params.id ? Number(req.params.id) : null;
+  if (!id) {
+    return res.status(400).json({ message: 'Invalid household ID' });
+  }
   const household = await prisma.household.findUnique({
     where: { id },
   });

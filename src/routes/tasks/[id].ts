@@ -1,8 +1,9 @@
 import { Handler } from 'express';
+import { checkToken } from '../../middlewares/checkToken';
 import prisma from '../../prisma';
 
 // Get task by ID
-export const get: Handler = async (req, res) => {
+export const get: Handler[] = [checkToken, async (req, res) => {
   const { id } = req.params;
   const userId = req.user?.id;
 
@@ -25,10 +26,10 @@ export const get: Handler = async (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
-};
+}];
 
 // Update a task
-export const put: Handler = async (req, res) => {
+export const put: Handler[] = [checkToken, async (req, res) => {
   const userId = req.user?.id;
   const household = await prisma.household.findFirst({
     where: { members: { some: { id: userId } } }
@@ -58,10 +59,10 @@ export const put: Handler = async (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
-};
+}];
 
 // Delete a task
-export const del: Handler = async (req, res) => {
+export const del: Handler[] = [checkToken, async (req, res) => {
   const { id } = req.params;
   const userId = req.user?.id;
   const household = await prisma.household.findFirst({
@@ -81,11 +82,12 @@ export const del: Handler = async (req, res) => {
   }
 
   try {
-    await prisma.task.delete({
+    await prisma.task.update({
       where: { id: Number(id) },
+      data: { deactivated: true },
     });
     res.status(204).send();
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
-};
+}];

@@ -1,5 +1,6 @@
 @apiUrl = http://localhost:3000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJwYXNzd29yZCI6IiQyYiQxMCRLZmRHR0VrcTZhVGViWnFmU2J4M3ZlREhJWGY1Q0Z6cm1GV3pZRmJ2TG5QSjE2Y3B4RFVlVyIsImF2YXRhclVybCI6bnVsbCwiY3VycmVudEdpZnQiOiIiLCJob3VzZWhvbGRJZCI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNS0wOS0xMVQwOTo1NDozNS42NDZaIiwidXBkYXRlZEF0IjoiMjAyNS0wOS0xMVQwOTo1NDozNS42NDZaIiwiaWF0IjoxNzU3NTg0NDc4fQ.1gxkgPOaMg35yII68Il-jkn_een5gjXhH7mqs3YSuOc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJwYXNzd29yZCI6IiQyYiQxMCRXWFdqRjJISG9EakFoZ1FrNVQxSi91UUtZVExZMzZuYkRSTGtGSjdqUUlYR0ZhYUZUNlNUQyIsImF2YXRhclVybCI6bnVsbCwiY3VycmVudEdpZnQiOiIiLCJob3VzZWhvbGRJZCI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNS0wOS0xMVQxMTo1MzoxMC4wMDFaIiwidXBkYXRlZEF0IjoiMjAyNS0wOS0xMVQxMTo1MzoxMC4wMDFaIiwiaWF0IjoxNzU3NTkxNTk2fQ.EA43bkUvegjrTKsi82dg55HnN8mED9-uwPcXGh7DCjw
+@tokenMartine = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJwYXNzd29yZCI6IiQyYiQxMCRXWFdqRjJISG9EakFoZ1FrNVQxSi91UUtZVExZMzZuYkRSTGtGSjdqUUlYR0ZhYUZUNlNUQyIsImF2YXRhclVybCI6bnVsbCwiY3VycmVudEdpZnQiOiIiLCJob3VzZWhvbGRJZCI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNS0wOS0xMVQxMTo1MzoxMC4wMDFaIiwidXBkYXRlZEF0IjoiMjAyNS0wOS0xMVQxMTo1MzoxMC4wMDFaIiwiaWF0IjoxNzU3NTkxNjE0fQ.epDMtz44M1OAcpX9Myc1xMRzbV5lnuptFDZnwUb_Cu0
 
 ### User Routes
 # @name createUser
@@ -12,6 +13,17 @@ Content-Type: application/json
   "password": "password123"
 }
 
+### User Routes
+# @name createUser
+POST http://localhost:3000/api/auth/local/register
+Content-Type: application/json
+
+{
+  "pseudo": "conjoint",
+  "email": "martine@example.com",
+  "password": "password123"
+}
+
 ###
 # @name loginUser
 POST http://localhost:3000/api/auth/local
@@ -19,6 +31,16 @@ Content-Type: application/json
 
 {
   "identifier": "test@example.com",
+  "password": "password123"
+}
+
+###
+# @name martine loginUser
+POST http://localhost:3000/api/auth/local
+Content-Type: application/json
+
+{
+  "identifier": "martine@example.com",
   "password": "password123"
 }
 
@@ -49,33 +71,49 @@ Authorization: Bearer {{token}}
   "avatarUrl": "https://img.favpng.com/16/11/7/gravatar-computer-icons-blog-png-favpng-Jr68yZHtrGj5dSUqHSXaJDQ4f.jpg"
 }
 
+###
+# @name joinHousehold
+POST http://localhost:3000/api/households/1/join
+Content-Type: application/json
+Authorization: Bearer {{tokenMartine}}
+
+###
+# @name leaveHousehold
+POST http://localhost:3000/api/households/1/leave
+Content-Type: application/json
+Authorization: Bearer {{tokenMartine}}
+
+
 ### Task Routes
 
 # @name createTask
-POST http://localhost:3000/api/task
+POST http://localhost:3000/api/tasks
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "title": "Clean the kitchen",
   "repetition": 7, 
   "dueDate": "2025-09-15T10:00:00Z",
   "deactivated": false,
-  "xp": 50,
-  "householdId": 1
+  "xp": 50
 }
 
 ###
 # @name getAllTasks
-GET http://localhost:3000/api/task
+GET http://localhost:3000/api/tasks
+Authorization: Bearer {{token}}
 
 ###
 # @name getTaskById
-GET http://localhost:3000/api/task/1
+GET http://localhost:3000/api/tasks/1
+Authorization: Bearer {{token}}
 
 ###
 # @name updateTask
-PUT http://localhost:3000/api/task/1
+PUT http://localhost:3000/api/tasks/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "title": "Clean the bathroom",
@@ -88,7 +126,8 @@ Content-Type: application/json
 
 ###
 # @name deleteTask
-DELETE http://localhost:3000/api/task/1
+DELETE http://localhost:3000/api/tasks/1
+Authorization: Bearer {{token}}
 
 ### CompletedTask Routes
 

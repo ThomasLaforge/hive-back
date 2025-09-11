@@ -1,25 +1,31 @@
 import { Handler } from 'express';
+import { checkToken } from '../../middlewares/checkToken';
 import prisma from '../../prisma';
 
 // Get all tasks
-export const get: Handler = async (req, res) => {
-  const userId = req.user?.id;
+export const get: Handler[] = [checkToken, async (req, res) => {
+const userId = req.user?.id;
+const household = await prisma.household.findFirst({
+    where: { members: { some: { id: userId } } }
+  });
+  if(!household) {
+    return res.status(401).json({ message: 'This user cannot get tasks cause not in a household' });
+  }
+
+  console.log('Fetching tasks for household ID:', household.id);
 
   const tasks = await prisma.task.findMany({
-    where: { 
-      household: {
-        members: {
-          some: { id: userId }
-        }
-      }
-     }
+    where: {
+      householdId: household.id,
+      deactivated: false,
+    }
   });
 
   res.json(tasks);
-};
+}];
 
 // Create a new task
-export const post: Handler = async (req, res) => {
+export const post: Handler[] = [checkToken, async (req, res) => {
   const userId = req.user?.id;
   const household = await prisma.user.findUnique({
     where: { id: userId },
@@ -40,4 +46,4 @@ export const post: Handler = async (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
-};
+}];
