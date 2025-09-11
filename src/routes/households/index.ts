@@ -18,7 +18,7 @@ export const post: Handler[] = [checkToken, async (req, res) => {
   const { name, avatarUrl } = req.body;
   try {
     const newHousehold = await prisma.household.create({
-      data: { name, avatarUrl, ownerId: userId },
+      data: { name, avatarUrl, ownerId: userId, members: { connect: { id: userId } } },
     });
     res.status(201).json(newHousehold);
   } catch (error: any) {

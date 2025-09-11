@@ -1,8 +1,9 @@
 import { Handler } from 'express';
+import { checkToken } from '../../middlewares/checkToken';
 import prisma from '../../prisma';
 
 // Get household by ID
-export const get: Handler = async (req, res) => {
+export const get: Handler[] = [checkToken, async (req, res) => {
   const userId = req.user?.id;
   const household = await prisma.household.findFirst({
     where: { members: { some: { id: userId } } }
@@ -23,10 +24,10 @@ export const get: Handler = async (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
-};
+}];
 
 // Update a household
-export const put: Handler = async (req, res) => {
+export const put: Handler[] = [checkToken, async (req, res) => {
   const household = await prisma.household.findUnique({
     where: { id: Number(req.params.id) },
   });
@@ -48,7 +49,7 @@ export const put: Handler = async (req, res) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
-};
+}];
 
 // Delete a household
 // export const del: Handler = async (req, res) => {

@@ -1,75 +1,63 @@
-### User Routes
+@apiUrl = http://localhost:3000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHNldWRvIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJwYXNzd29yZCI6IiQyYiQxMCRLZmRHR0VrcTZhVGViWnFmU2J4M3ZlREhJWGY1Q0Z6cm1GV3pZRmJ2TG5QSjE2Y3B4RFVlVyIsImF2YXRhclVybCI6bnVsbCwiY3VycmVudEdpZnQiOiIiLCJob3VzZWhvbGRJZCI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNS0wOS0xMVQwOTo1NDozNS42NDZaIiwidXBkYXRlZEF0IjoiMjAyNS0wOS0xMVQwOTo1NDozNS42NDZaIiwiaWF0IjoxNzU3NTg0NDc4fQ.1gxkgPOaMg35yII68Il-jkn_een5gjXhH7mqs3YSuOc
 
-POST http://localhost:3000/api/user
+### User Routes
+# @name createUser
+POST http://localhost:3000/api/auth/local/register
 Content-Type: application/json
 
 {
   "pseudo": "testuser",
   "email": "test@example.com",
-  "password": "password123",
-  "avatarUrl": "http://example.com/avatar.png",
-  "currentGift": "Gift A"
+  "password": "password123"
 }
 
 ###
-GET http://localhost:3000/api/user
-
-###
-GET http://localhost:3000/api/user/1
-
-###
-PUT http://localhost:3000/api/user/1
+# @name loginUser
+POST http://localhost:3000/api/auth/local
 Content-Type: application/json
 
 {
-  "pseudo": "updateduser",
-  "email": "updated@example.com",
-  "password": "newpassword",
-  "avatarUrl": "http://example.com/new_avatar.png",
-  "currentGift": "Gift B"
+  "identifier": "test@example.com",
+  "password": "password123"
 }
 
-###
-DELETE http://localhost:3000/api/user/1
-
 ### Household Routes
-
-POST http://localhost:3000/api/household
+# @name createHousehold
+POST http://localhost:3000/api/households
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "My Family",
-  "avatarUrl": "http://example.com/household.png",
-  "ownerId": 1
+  "avatarUrl": "https://img.favpng.com/16/11/7/gravatar-computer-icons-blog-png-favpng-Jr68yZHtrGj5dSUqHSXaJDQ4f.jpg"
 }
 
 ###
-GET http://localhost:3000/api/household
+# @name getHouseholdById
+GET http://localhost:3000/api/households/1
+Authorization: Bearer {{token}}
 
 ###
-GET http://localhost:3000/api/household/1
-
-###
-PUT http://localhost:3000/api/household/1
+# @name updateHousehold
+PUT http://localhost:3000/api/households/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Updated Family",
-  "avatarUrl": "http://example.com/updated_household.png",
-  "ownerId": 1
+  "avatarUrl": "https://img.favpng.com/16/11/7/gravatar-computer-icons-blog-png-favpng-Jr68yZHtrGj5dSUqHSXaJDQ4f.jpg"
 }
-
-###
-DELETE http://localhost:3000/api/household/1
 
 ### Task Routes
 
+# @name createTask
 POST http://localhost:3000/api/task
 Content-Type: application/json
 
 {
   "title": "Clean the kitchen",
-  "repetition": "daily",
+  "repetition": 7, 
   "dueDate": "2025-09-15T10:00:00Z",
   "deactivated": false,
   "xp": 50,
@@ -77,18 +65,21 @@ Content-Type: application/json
 }
 
 ###
+# @name getAllTasks
 GET http://localhost:3000/api/task
 
 ###
+# @name getTaskById
 GET http://localhost:3000/api/task/1
 
 ###
+# @name updateTask
 PUT http://localhost:3000/api/task/1
 Content-Type: application/json
 
 {
   "title": "Clean the bathroom",
-  "repetition": "weekly",
+  "repetition": 14, 
   "dueDate": "2025-09-20T12:00:00Z",
   "deactivated": false,
   "xp": 75,
@@ -96,10 +87,12 @@ Content-Type: application/json
 }
 
 ###
+# @name deleteTask
 DELETE http://localhost:3000/api/task/1
 
 ### CompletedTask Routes
 
+# @name createCompletedTask
 POST http://localhost:3000/api/completedtask
 Content-Type: application/json
 
@@ -110,12 +103,15 @@ Content-Type: application/json
 }
 
 ###
+# @name getAllCompletedTasks
 GET http://localhost:3000/api/completedtask
 
 ###
+# @name getCompletedTaskById
 GET http://localhost:3000/api/completedtask/1
 
 ###
+# @name updateCompletedTask
 PUT http://localhost:3000/api/completedtask/1
 Content-Type: application/json
 
@@ -126,4 +122,5 @@ Content-Type: application/json
 }
 
 ###
+# @name deleteCompletedTask
 DELETE http://localhost:3000/api/completedtask/1
