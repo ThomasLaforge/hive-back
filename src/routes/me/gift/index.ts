@@ -1,7 +1,8 @@
 import { Handler } from "express";
+import { checkToken } from "../../../middlewares/checkToken";
 import prisma from "../../../prisma";
 
-export const PUT: Handler = async (req, res) => {
+export const PUT: Handler[] = [checkToken, async (req, res) => {
   const userId = req.user?.id;
   const { title } = req.body;
   try {
@@ -9,6 +10,13 @@ export const PUT: Handler = async (req, res) => {
       where: { id: userId },
       data: {
         currentGift: title
+      },
+      select: {
+        id: true,
+        pseudo: true,
+        email: true,
+        avatarUrl: true,
+        currentGift: true,
       }
     });
     return res.json(updatedGift);
@@ -16,4 +24,4 @@ export const PUT: Handler = async (req, res) => {
     console.error("Error updating gift:", error);
     return res.status(500).json({ message: "Error updating gift" });
   }
-};
+}];

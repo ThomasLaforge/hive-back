@@ -129,6 +129,39 @@ Authorization: Bearer {{token}}
 DELETE http://localhost:3000/api/tasks/1
 Authorization: Bearer {{token}}
 
+### Me
+
+# @name getMe
+GET http://localhost:3000/api/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "pseudo": "testuser",
+  "avatarUrl": "https://example.com/avatar.jpg"
+}
+
+###
+# @name updateMe
+PUT http://localhost:3000/api/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "pseudo": "updateduser",
+  "avatarUrl": "https://example.com/new-avatar.jpg"
+}
+
+###
+# @name updateGift
+PUT http://localhost:3000/api/me/gift
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "New Gift Title"
+}
+
 ### CompletedTask Routes
 
 # @name createCompletedTask
@@ -142,8 +175,9 @@ Content-Type: application/json
 }
 
 ###
-# @name getAllCompletedTasks
-GET http://localhost:3000/api/completedtask
+# @name getAll Tasks To complete
+GET http://localhost:3000/api/tasks/to-complete
+Authorization: Bearer {{token}}
 
 ###
 # @name getCompletedTaskById
