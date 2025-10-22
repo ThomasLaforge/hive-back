@@ -1,70 +1,54 @@
 import { Handler } from 'express';
-import { checkToken } from '../../../middlewares/checkToken';
 import prisma from '../../../prisma';
+import { checkToken } from '../../../middlewares/checkToken';
 
-// Get household by ID
+// GET /api/households/:id
+// Returns household details with members and their total points (sum of completed task xp within this household)
 export const get: Handler[] = [checkToken, async (req, res) => {
-  const userId = req.user?.id;
-  const household = await prisma.household.findFirst({
-    where: { members: { some: { id: userId } } }
-  });
-  if(!household) {
-    return res.status(401).json({ message: 'This user cannot get household cause not in a household' });
-  }
-  const { id } = req.params;
   try {
-    const household = await prisma.household.findUnique({
-      where: { id: Number(id) },
-      include: {
-        members: true,
-        tasks: true,
-        owner: true
-      }
-    });
-    if (household) {
-      res.json(household);
-    } else {
-      res.status(404).json({ message: 'Household not found' });
+    const requesterId = req.user?.id;
+    const idParam = req.params.id;
+    const householdId = Number(idParam);
+    if (!householdId || Number.isNaN(householdId)) {
+      return res.status(400).json({ message: 'Invalid household id' });
     }
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-}];
 
-// Update a household
-export const put: Handler[] = [checkToken, async (req, res) => {
-  const household = await prisma.household.findUnique({
-    where: { id: Number(req.params.id) },
-  });
-  if(!household) {
-    return res.status(404).json({ message: 'Household not found' });
-  }
-  if(household.ownerId !== req.user?.id) {
-    return res.status(403).json({ message: 'This user cannot update this household cause not the owner' });
-  }
-    
-  const { id } = req.params;
-  const { name, avatarUrl, ownerId } = req.body;
-  try {
-    const updatedHousehold = await prisma.household.update({
-      where: { id: Number(id) },
-      data: { name, avatarUrl, ownerId },
+    const household = await prisma.household.findUnique({
+      where: { id: householdId },
+      include: { members: true },
     });
-    res.json(updatedHousehold);
+    if (!household) return res.status(404).json({ message: 'Household not found' });
+
+    const isMember = household.members.some((m) => m.id === requesterId);
+    if (!isMember) return res.status(403).json({ message: 'Forbidden: not a member of this household' });
+
+    // Fetch all completed tasks tied to tasks within this household, then aggregate per user
+    const completions = await prisma.completedTask.findMany({
+      where: { task: { householdId } },
+      select: { userId: true, xpEarned: true },
+    });
+
+    const pointsByUser = new Map<number, number>();
+    for (const c of completions) {
+      pointsByUser.set(c.userId, (pointsByUser.get(c.userId) || 0) + (c.xpEarned || 0));
+    }
+
+    const payload = {
+      id: household.id,
+      name: household.name,
+      avatarUrl: household.avatarUrl,
+      ownerId: household.ownerId,
+      members: household.members.map((m) => ({
+        id: m.id,
+        pseudo: m.pseudo,
+        avatarUrl: m.avatarUrl,
+        points: pointsByUser.get(m.id) || 0,
+      })),
+    };
+
+    return res.json(payload);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 }];
 
-// Delete a household
-// export const del: Handler = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     await prisma.household.delete({
-//       where: { id: Number(id) },
-//     });
-//     res.status(204).send();
-//   } catch (error: any) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };

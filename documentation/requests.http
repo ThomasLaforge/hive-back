@@ -4,12 +4,12 @@
 
 ### User Routes
 # @name createUser
-POST http://localhost:3000/api/auth/local/register
+POST https://1294cb710133.ngrok-free.app/api/auth/local/register
 Content-Type: application/json
 
 {
-  "pseudo": "testuser",
-  "email": "test@example.com",
+  "pseudo": "testuser3",
+  "email": "test3@example.com",
   "password": "password123"
 }
 
@@ -57,7 +57,7 @@ Authorization: Bearer {{token}}
 
 ###
 # @name getHouseholdById
-GET http://localhost:3000/api/households/1
+GET http://localhost:3000/api/households/5
 Authorization: Bearer {{token}}
 
 ###
