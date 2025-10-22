@@ -1,54 +1,43 @@
 import { Handler } from 'express';
-import { checkToken } from '../../middlewares/checkToken';
 import prisma from '../../prisma';
 
-// Get all tasks
-export const get: Handler[] = [checkToken, async (req, res) => {
-const userId = req.user?.id;
-const household = await prisma.household.findFirst({
-    where: { members: { some: { id: userId } } }
-  });
-  if(!household) {
-    return res.status(401).json({ message: 'This user cannot get tasks cause not in a household' });
-  }
+// Get user by ID
+export const get: Handler = async (req, res) => {
+    const userId = req.user?.id;
 
-  console.log('Fetching tasks for household ID:', household.id);
-
-  const tasks = await prisma.task.findMany({
-    where: {
-      householdId: household.id,
-    }
-  });
-
-  res.json(tasks);
-}];
-
-// Create a new task
-export const post: Handler[] = [checkToken, async (req, res) => {
-  const userId = req.user?.id;
-  // Fetch the current user with its household relation
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { household: true },
-  });
-  if (!user || !user.household) {
-    return res.status(401).json({ message: 'This user cannot create tasks cause not in a household' });
-  }
-
-  const { title, repetition, dueDate, deactivated, xp } = req.body;
-  try {
-    const newTask = await prisma.task.create({
-      data: {
-        title,
-        repetition,
-        dueDate,
-        deactivated,
-        xp,
-        householdId: user.household.id, // ensure task is attached to the user household
-      },
+    const householdList = await prisma.user.findMany({
+        where: { id: userId },
+        include: {
+            household: true,
+        },
+        orderBy: {
+            household: {
+                createdAt: "desc"
+            }
+        }
     });
-    res.status(201).json(newTask);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-}];
+
+    if(!householdList || householdList.length === 0) {
+        return res.status(401).json({ message: 'This user cannot find other users cause not in a household' });
+    }
+
+    const household = householdList[0]
+
+    const { id } = req.params;
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: Number(id), householdId: household?.householdId },
+        });
+        if (user) {
+            if(user.householdId !== household?.householdId) {
+                return res.status(403).json({ message: 'This user cannot get this user cause not in the same household' });
+            }
+            res.json(user);
+        }
+        else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+};
